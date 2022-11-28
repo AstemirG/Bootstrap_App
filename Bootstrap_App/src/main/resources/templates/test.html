@@ -73,7 +73,69 @@
                                             <td th:utext="${person.getLastName()}">...</td>
                                             <td th:utext="${person.getUsername()}">...</td>
                                             <td>
-                                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalEdit">Edit</button>
+                                                <button type="button" class="btn btn-info" data-bs-toggle="modal" th:data-target="${'#editUser' + person.getId()}" th:data-row="${person}">Edit</button>
+
+                                                <!--Модальное окно редактирования-->
+                                                <div class="modal fade" th:id="${'editUser' + person.getId()}" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <form th:method="PATCH" th:action="@{/user/{id}(id=${person.getId()})}" th:object="${person}" id="${'editUserForm' + user.getId()}">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Edit user</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body text-center">
+                                                                    <div class="form-group required">
+                                                                        <div class="controls">
+                                                                            <p>
+                                                                                <label for="idEditUser">
+                                                                                    <strong>ID</strong>
+                                                                                    <input class="form-control" type="number" th:value="${person.id}" name="id" id="idEditUser" disabled>
+                                                                                </label>
+                                                                            </p>
+                                                                            <p>
+                                                                                <label for="firstNameEditUser">
+                                                                                    <strong>First Name</strong>
+                                                                                    <input class="form-control" th:value="${person.firstName}" name="firstName" id="firstNameEditUser">
+                                                                                </label>
+                                                                            </p>
+                                                                            <p>
+                                                                                <label for="lastNameEditUser">
+                                                                                    <strong>Last Name</strong>
+                                                                                    <input class="form-control" th:value="${person.lastName}" name="lastName" id="lastNameEditUser">
+                                                                                </label>
+                                                                            </p>
+                                                                            <p>
+                                                                                <label for="usernameEditUser">
+                                                                                    <strong>Username</strong>
+                                                                                    <input class="form-control" th:value="${person.username}" name="username" id="usernameEditUser">
+                                                                                </label>
+                                                                            </p>
+                                                                            <p>
+                                                                                <label for="passwordEditUser">
+                                                                                    <strong>Password</strong>
+                                                                                    <input class="form-control" type="password" th:value="${person.password}" name="password" id="passwordEditUser">
+                                                                                </label>
+                                                                            </p>
+                                                                            <label class="container-fluid col-6" for="rolesEditUser">
+                                                                                <strong>Role</strong>
+                                                                                <select id="rolesEditUser" class="form-select" name="roles" multiple="" size="2" >
+                                                                                    <option value="1">User</option>
+                                                                                    <option value="2">Admin</option>
+                                                                                </select>
+                                                                            </label>
+                                                                            <br/><br/>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" id="editFormCloseButton" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                            <button type="submit" class="btn btn-primary">Edit</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Delete</button>
                                             </td>
                                         </tr>
@@ -89,38 +151,38 @@
                                         <h5 class="card-header">New user</h5>
                                         <div class="card-body text-center">
                                             <div class="form-justify-content-center mx-auto col-3">
-                                                <form id="formNewUser" name="formNewUser">
+                                                <form id="formNewUser" name="formNewUser" th:method="POST" th:action="@{/user}" th:object="${newUser}">
                                                     <p>
-                                                        <label class="container-fluid" for="newUserName">
+                                                        <label class="container-fluid" for="newUserUsername">
                                                             <strong>Username</strong>
-                                                            <input class="form-control" type="text" name="username" id="newUserName">
+                                                            <input class="form-control" type="text" th:field="*{username}" id="newUserUsername"/>
                                                         </label>
                                                     </p>
                                                     <p>
                                                         <label class="container-fluid" for="newUserFirstName">
                                                             <strong>First Name</strong>
-                                                            <input class="form-control" type="text" name="firstName" id="newUserFirstName">
+                                                            <input class="form-control" type="text" th:field="*{firstName}" name="firstName" id="newUserFirstName">
                                                         </label>
                                                     </p>
                                                     <p>
                                                         <label class="container-fluid" for="newUserLastName">
                                                             <strong>Last Name</strong>
-                                                            <input class="form-control" type="text" name="lastName" id="newUserLastName">
+                                                            <input class="form-control" type="text" th:field="*{lastName}" name="lastName" id="newUserLastName">
                                                         </label>
                                                     </p>
                                                     <p>
                                                         <label class="container-fluid" for="newUserPassword">
                                                             <strong>Password</strong>
-                                                            <input class="form-control" type="text" name="password" id="newUserPassword">
+                                                            <input class="form-control" type="text" th:field="*{password}" name="password" id="newUserPassword">
                                                         </label>
                                                     </p>
                                                     <label class="container-fluid" for="newUserRoles">
                                                             <strong>Role</strong>
-                                                            <select id="newUserRoles" class="form-select" name="roles" multiple="" size="2" >
-                                                                <option value="1">User</option>
-                                                                <option value="2">Admin</option>
+                                                            <select id="newUserRoles" class="form-select" name="roles" multiple="" size="2" th:field="*{roles[0].role}">
+                                                                <option value="1">ROLE_USER</option>
+                                                                <option value="2">ROLE_ADMIN</option>
                                                             </select>
-                                                        </label>
+                                                    </label>
                                                     <button type="submit" id="newUserButton" class="btn btn-success">Add new user</button>
                                                 </form>
                                             </div>
@@ -162,66 +224,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="formEdit">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit user</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="form-group required">
-                        <div class="controls">
-                            <p>
-                                <label for="idEditUser">
-                                    <strong>ID</strong>
-                                    <input class="form-control" type="number" name="id" id="idEditUser" disabled>
-                                </label>
-                            </p>
-                            <p>
-                                <label for="firstNameEditUser">
-                                    <strong>First Name</strong>
-                                    <input class="form-control" name="firstName" id="firstNameEditUser">
-                                </label>
-                            </p>
-                            <p>
-                                <label for="lastNameEditUser">
-                                    <strong>Last Name</strong>
-                                    <input class="form-control" name="lastName" id="lastNameEditUser">
-                                </label>
-                            </p>
-                            <p>
-                                <label for="usernameEditUser">
-                                    <strong>Username</strong>
-                                    <input class="form-control" name="username" id="usernameEditUser">
-                                </label>
-                            </p>
-                            <p>
-                                <label for="passwordEditUser">
-                                    <strong>Password</strong>
-                                    <input class="form-control" type="password" name="password" id="passwordEditUser">
-                                </label>
-                            </p>
-                            <label class="container-fluid col-6" for="rolesEditUser">
-                                <strong>Role</strong>
-                                <select id="rolesEditUser" class="form-select" name="roles" multiple="" size="2" >
-                                    <option value="1">User</option>
-                                    <option value="2">Admin</option>
-                                </select>
-                            </label>
-                            <br/><br/>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="editFormCloseButton" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Edit</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
 
 <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="delete" aria-hidden="true">
     <div class="modal-dialog" role="document">
