@@ -28,42 +28,10 @@ public class UserController {
         this.repository = repository;
     }
 
-    @GetMapping("/info")
-    public String edit(Model model, Principal principal) {
-        model.addAttribute("user",service.loadUserByUsername(principal.getName()));
+    @GetMapping("/panel")
+    public String test(Model model,@AuthenticationPrincipal User currentUser) {
+        model.addAttribute("user",currentUser);
         return "user";
     }
 
-    @GetMapping("/test")
-    public String test(Model model,@AuthenticationPrincipal User currentUser) {
-        List<User> allUsers = service.getAllUsers();
-        model.addAttribute("allUsers",allUsers);
-        model.addAttribute("user",currentUser);
-        model.addAttribute("newUser", new User());
-        model.addAttribute("allRoles",repository.findAll());
-        return "test";
-    }
-
-    @PostMapping()
-    public String createUser(@ModelAttribute("user") User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        List<Role> roleList = user.getRoles();
-        user.setRoles(roleList);
-        service.saveUser(user);
-        return "redirect:/admin/all";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") int id) {
-        model.addAttribute("userEdit",service.getUserById(id));
-        return "test";
-    }
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("editUser") User user,
-                         @PathVariable("id") int id) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        service.updateUser(id,user);
-        return "redirect:/admin/all";
-    }
 }

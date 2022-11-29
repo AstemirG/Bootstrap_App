@@ -5,72 +5,72 @@ import com.bootstrap.Bootstrap_App.model.User;
 import com.bootstrap.Bootstrap_App.repositories.RoleRepository;
 import com.bootstrap.Bootstrap_App.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final UserService service;
-    private final RoleRepository repository;
+    private UserService service;
     private final PasswordEncoder encoder;
+    private final RoleRepository repository;
 
     @Autowired
-    public AdminController(UserService service, RoleRepository repository, RoleRepository repository1, PasswordEncoder encoder) {
+    public AdminController(UserService service, RoleRepository repository, PasswordEncoder encoder) {
         this.service = service;
-        this.repository = repository1;
+        this.repository = repository;
         this.encoder = encoder;
     }
 
-    @GetMapping(value = "/all")
-    public String showAllUsers(Model model) {
+    @GetMapping("/panel")
+    public String test(Model model,@AuthenticationPrincipal User currentUser) {
         List<User> allUsers = service.getAllUsers();
         model.addAttribute("allUsers",allUsers);
-        return "all-Users";
-    }
-
-    @GetMapping(value = "/new")
-    public String newUser(Model model) {
-        User user = new User();
-        user.addRole(new Role());
-        user.addRole(new Role());
-        model.addAttribute("user",user);
-        return "add-User";
+        model.addAttribute("user",currentUser);
+        model.addAttribute("newUser", new User());
+        model.addAttribute("allRoles",repository.findAll());
+        return "admin";
     }
 
     @PostMapping()
     public String createUser(@ModelAttribute("user") User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         List<Role> roleList = user.getRoles();
-        //roleList.add(repository.getById(1));
+        Optional<Role> roleUser = repository.findById(1);
+        if (roleList.isEmpty()) {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole()=="ROLE_ADMIN") {
+            roleList.add(roleUser.get());
+        }
         user.setRoles(roleList);
         service.saveUser(user);
-        return "redirect:/admin/all";
+        return "redirect:/admin/panel";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
-        model.addAttribute("user",service.getUserById(id));
-        return "edit-User";
+        model.addAttribute("userEdit",service.getUserById(id));
+        return "admin";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user,
+    public String update(@ModelAttribute("editUser") User user,
                          @PathVariable("id") int id) {
         user.setPassword(encoder.encode(user.getPassword()));
         service.updateUser(id,user);
-        return "redirect:/admin/all";
+        return "redirect:/admin/panel";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@ModelAttribute("user") User user,
                          @PathVariable("id") int id) {
         service.deleteUser(id);
-        return "redirect:/admin/all";
+        return "redirect:/admin/panel";
     }
 }
