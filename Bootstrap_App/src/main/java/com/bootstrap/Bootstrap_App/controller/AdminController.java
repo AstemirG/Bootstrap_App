@@ -62,6 +62,20 @@ public class AdminController {
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("editUser") User user,
                          @PathVariable("id") int id) {
+        List<Role> roleList = user.getRoles();
+        Optional<Role> roleUser = repository.findById(1);
+        Optional<Role> roleAdmin = repository.findById(2);
+        if (roleList.isEmpty()) {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole()=="ROLE_ADMIN") {
+            roleList.add(roleUser.get());
+        }
+        if (roleList.get(0).getRole() == "1") {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole() == "2") {
+            roleList.add(roleAdmin.get());
+        }
+        user.setRoles(roleList);
         user.setPassword(encoder.encode(user.getPassword()));
         service.updateUser(id,user);
         return "redirect:/admin/panel";
