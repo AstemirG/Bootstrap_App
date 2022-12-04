@@ -9,20 +9,25 @@
 </head>
 <body>
 
-<header class="p-3 bg-dark text-white">
-    <div class="container">
-        <div class="bg-dark  ">
-            <div class="d-inline">
-            <span class="text-white h6">
-                <strong><th:block th:text="${user.getUsername()}">admin</th:block></strong>
-            </span>
-                &nbsp;
-                <span class="text-white h6">
-                <th:block class="font-weight-normal" th:text="'with roles: '+ ${user.getRoles()}">ADMIN</th:block>
-            </span>
-            </div>
-            <div class="d-inline float-right nav mr-0 pr-0">
-                <a class="text-secondary nav-item " th:href="@{/logout}">logout</a>
+<header>
+    <div class="container-fluid" style="padding: 0">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+
+                    <div class="collapse navbar-collapse" id="user">
+                        <ul class="navbar-nav mr-auto">
+                            <a class="navbar-brand font-weight-bold" id="headerUsername"><strong><th:block th:text="${user.getUsername()}">admin</th:block></strong></a>
+                            <a class="navbar-brand">with roles: </a>
+                            <a class="navbar-brand" id="headerRoles"><th:block class="font-weight-normal" th:text="${user.getRoles()}">ADMIN</th:block></a>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-right" th:href="@{/logout}">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
         </div>
     </div>
@@ -64,9 +69,10 @@
                                         <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Имя</th>
-                                            <th>Фамилия</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
                                             <th>Username</th>
+                                            <th>Role</th>
                                             <th>Edit</th>
                                         </tr>
                                         </thead>
@@ -76,6 +82,16 @@
                                             <td th:utext="${person.getFirstName()}">...</td>
                                             <td th:utext="${person.getLastName()}">...</td>
                                             <td th:utext="${person.getUsername()}">...</td>
+                                            <td>
+                                                <th:block th:each="role: ${person.getRoles()}">
+                                                <div class="block" th:if="${role.role} == 'ROLE_ADMIN'">
+                                                    Admin
+                                                </div>
+                                                <div class = "block" th:if="${role.role} == 'ROLE_USER'">
+                                                    User
+                                                </div>
+                                                </th:block>
+                                            </td>
                                             <td>
                                                 <button type="button" class="btn btn-info" data-toggle="modal" th:data-target="${'#editUser' + person.getId()}" th:data-row="${person}">Edit</button>
 
@@ -123,7 +139,7 @@
                                                                             </p>
                                                                             <p>
                                                                                 <label class="container-fluid " for="rolesEditUser"><strong>Role</strong></label>
-                                                                                <select id="rolesEditUser" class="form-select" th:value="*{roles[0].role}" name="roles" multiple="" size="2" >
+                                                                                <select id="rolesEditUser" class="form-select col-md-5" th:value="*{roles[0].role}" name="roles" multiple="" size="2" >
                                                                                     <option value="1">User</option>
                                                                                     <option value="2">Admin</option>
                                                                                 </select>
@@ -181,7 +197,7 @@
                                                                             </p>
                                                                             <p>
                                                                             <label class="container-fluid " for="rolesDeleteUser"><strong>Role</strong></label>
-                                                                                <select id="rolesDeleteUser" class="form-select" name="roles" multiple="" size="2" th:value="*{user.roles}" disabled>
+                                                                                <select id="rolesDeleteUser" class="form-select col-md-5" name="roles" multiple="" size="2" th:value="*{user.roles}" disabled>
                                                                                     <option th:each="role : ${person.getRoles()}" th:value="${role}" th:text="${role}"/>
                                                                                 </select>
                                                                             </p>
@@ -238,11 +254,12 @@
                                                         </label>
                                                     </p>
                                                     <p>
-                                                        <label class="container-fluid" for="newUserRoles"><strong>Role</strong></label>
-                                                            <select id="newUserRoles" class="form-select" name="roles" multiple="" size="2" th:field="*{roles[0].role}">
+                                                        <label class="container-fluid " for="newUserRoles"><strong>Role</strong>
+                                                            <select id="newUserRoles" class="form-select col-md-12" name="roles" multiple="" size="2" th:field="*{roles[0].role}">
                                                                 <option value="ROLE_USER">User</option>
                                                                 <option value="ROLE_ADMIN">Admin</option>
                                                             </select>
+                                                        </label>
                                                     </p>
                                                     <button type="submit" id="newUserButton" class="btn btn-success">Add new user</button>
                                                 </form>

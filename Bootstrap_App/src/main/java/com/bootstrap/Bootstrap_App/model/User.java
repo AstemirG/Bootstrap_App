@@ -1,5 +1,6 @@
 package com.bootstrap.Bootstrap_App.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -29,6 +30,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_role")
     )
+    @JsonIgnore
     private List<Role> roles;
 
     public User(String firstName, String lastName, String username, String password, List<Role> roles) {

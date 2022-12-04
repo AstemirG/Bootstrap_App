@@ -1,5 +1,6 @@
 package com.bootstrap.Bootstrap_App.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Role implements GrantedAuthority {
     private String role;
 
     @ManyToMany(mappedBy = "roles",fetch = FetchType.EAGER)
+    @JsonIgnore
     List<User> users;
 
     public Role(String role, List<User> users) {
