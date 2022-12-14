@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -31,11 +32,6 @@ public class RestAdminController {
         return new ResponseEntity<>(service.getAllUsers(),HttpStatus.OK);
     }
 
-    @GetMapping("/usersList")
-    public List<User> getAllUsersList() {
-        return service.getAllUsers();
-    }
-
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
@@ -43,6 +39,24 @@ public class RestAdminController {
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        List<Role> roleList = user.getRoles();
+        System.out.println("______________________________");
+        System.out.println(user.getAuthorities());
+        System.out.println("______________________________");
+        System.out.println(user.getRoles());
+        Optional<Role> roleUser = repository.findById(1);
+        Optional<Role> roleAdmin = repository.findById(2);
+        if (roleList==null || roleList.isEmpty()) {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole()=="ROLE_ADMIN") {
+            roleList.add(roleUser.get());
+        }
+        if (roleList.get(0).getRole() == "1") {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole() == "2") {
+            roleList.add(roleAdmin.get());
+        }
+        user.setRoles(roleList);
         service.saveUser(user);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
@@ -54,6 +68,23 @@ public class RestAdminController {
 
     @PostMapping("user/{id}/edit")
     public ResponseEntity<User> userEdit(@PathVariable("id") int id,@RequestBody User user) {
+        if(user.getPassword().length()==60) {
+            user.setPassword(encoder.encode(user.getPassword()));
+        }
+        List<Role> roleList = user.getRoles();
+        Optional<Role> roleUser = repository.findById(1);
+        Optional<Role> roleAdmin = repository.findById(2);
+        if (roleList.isEmpty() || roleList==null) {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole()=="ROLE_ADMIN") {
+            roleList.add(roleUser.get());
+        }
+        if (roleList.get(0).getRole() == "1") {
+            roleList.add(roleUser.get());
+        } else if (roleList.get(0).getRole() == "2") {
+            roleList.add(roleAdmin.get());
+        }
+        user.setRoles(roleList);
         service.updateUser(id,user);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }

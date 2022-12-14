@@ -87,4 +87,10 @@ public class AdminController {
         service.deleteUser(id);
         return "redirect:/admin/panel";
     }
+
+    @GetMapping("/test")
+    public String testtest(Model model,@AuthenticationPrincipal User currentUser) {
+        model.addAttribute("user",currentUser);
+        return "test";
+    }
 }
